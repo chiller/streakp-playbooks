@@ -1,0 +1,57 @@
+###
+# Pulls the code from a remote Git repository, configures the web application,
+# creates a virtualenv, and collects static assets
+#
+---
+
+- name: checkout latest web app code
+  git: repo={{code_repository}} dest={{app_code_dir}}   accept_hostkey=yes
+
+- name: check if virtualenv already exists
+  stat: path={{virtualenv_dir}}
+  register: venv_dir
+
+- name: create virtualenv for Django web application
+  shell: virtualenv {{virtualenv_dir}}
+  when: venv_dir.stat.isdir is not defined
+
+- name: install web application dependencies listed in requirements.txt
+  pip: requirements={{requirements_file}}
+       virtualenv={{virtualenv_dir}}
+
+- name: check if app/static directory exists
+  stat: path={{app_code_dir}}/static
+  register: static_dir
+
+- name: create static directory for Django app if it does not exist
+  command: mkdir {{app_code_dir}}/static
+  when: static_dir.stat.isdir is not defined
+
+- name: check if local_settings exists
+  stat: path={{project_root}}/{{django_settings_dir_name}}/local_settings.py
+  register: local_settings_reg
+
+- name: ensure local_settings
+  command: touch {{project_root}}/{{django_settings_dir_name}}/local_settings.py
+  when: local_settings_reg.stat.exists == False
+
+- name: Django collectstatic
+  django_manage: command=collectstatic
+                 app_path={{project_root}}
+                 virtualenv={{virtualenv_dir}}
+                 settings={{django_settings}}
+  environment: django_env_vars
+
+- name: Django syncdb
+  django_manage: command=syncdb
+                 app_path={{project_root}}
+                 virtualenv={{virtualenv_dir}}
+                 settings={{django_settings}}
+  environment: django_env_vars
+
+- name: Django migrate
+  django_manage: command=migrate
+                 app_path={{project_root}}
+                 virtualenv={{virtualenv_dir}}
+                 settings={{django_settings}}
+  environment: django_env_vars

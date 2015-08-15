@@ -1,0 +1,14 @@
+---
+- name: deploy nginx and configure web servers
+  hosts: webservers
+  user: ubuntu
+
+  roles:
+    - common
+
+- name: deploy nginx and configure web servers
+  hosts: webservers
+  user: ubuntu
+
+  roles:
+    - web

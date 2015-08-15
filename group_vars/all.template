@@ -1,0 +1,35 @@
+# all environment variables for your app should be included below so
+# that Django's manage.py command can run properly
+---
+app_name:
+
+deploy_user:
+
+deploy_ssl:
+
+root_domain_name:
+
+django_settings_dir_name:
+
+project_name:
+
+code_repository:
+
+virtualenv_dir:
+
+app_code_dir:
+
+project_root:
+
+static_dir:
+
+requirements_file:
+
+django_settings:
+
+django_env_vars:
+    DEBUG: True
+    DATABASE_URL: ''
+    STATIC_URL: '/static/'
+    SECRET_KEY: ''
+
